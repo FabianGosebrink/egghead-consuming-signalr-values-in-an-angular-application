@@ -12,9 +12,8 @@
   </form>
 </div>
 <div>
-  <ul style="list-style-type:none">
+  <ul style="list-style-type: none;">
     <li *ngFor="let item of items">
-
       <s *ngIf="item.done" class="inactive">{{item.value}}</s>
       <span *ngIf="!item.done">{{item.value}}</span>
 

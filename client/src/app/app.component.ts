@@ -2,24 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Todo } from './models/todo.model';
-import { SignalService } from './services/signal.service';
+import { SignalRService } from './services/signalr.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styles: [
-    `.inactive {
-        color: gray;
-    }`
-  ]
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  form: FormGroup;
   items: Todo[];
+  form: FormGroup;
 
   constructor(
-    private readonly signalrService: SignalService,
+    private readonly signalrService: SignalRService,
     private readonly http: HttpClient
   ) {
     signalrService.itemAdded.subscribe(item => this.items.push(item));
@@ -30,24 +26,24 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.http
+      .get<Todo[]>('https://localhost:5001/api/todos/')
+      .subscribe(items => {
+        this.items = items;
+      });
+
     this.form = new FormGroup({
       todoValue: new FormControl('', Validators.required)
     });
-
-    this.http
-      .get('https://localhost:5001/api/todos/')
-      .subscribe((response: Todo[]) => {
-        this.items = response;
-      });
   }
 
   addTodo() {
     const toSend = { value: this.form.value.todoValue };
+
     this.http
       .post('https://localhost:5001/api/todos/', toSend)
-      .subscribe(() => {
-        console.log('added');
-      });
+      .subscribe(() => console.log('added'));
+
     this.form.reset();
   }
 
@@ -55,8 +51,6 @@ export class AppComponent implements OnInit {
     item.done = true;
     this.http
       .put('https://localhost:5001/api/todos/' + item.id, item)
-      .subscribe(() => {
-        console.log('updated');
-      });
+      .subscribe(() => console.log('updated'));
   }
 }

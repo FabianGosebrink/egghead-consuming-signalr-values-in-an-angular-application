@@ -22,31 +22,32 @@ namespace server.Controllers
             _todoHubContext = todoHubContext;
         }
 
-        // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<TodoItem>> Get()
         {
             return Ok(_store.Values);
         }
 
-        // POST api/values
         [HttpPost]
         public ActionResult<TodoItem> Post([FromBody] TodoItem todoItem)
         {
             Guid key = Guid.NewGuid();
             todoItem.Id = key;
             _store.TryAdd(key, todoItem);
+
             _todoHubContext.Clients.All.SendAsync("itemAdded", todoItem);
+
             return Ok(todoItem);
         }
 
-        // PUT api/values/5
         [HttpPut("{id}")]
         public ActionResult<TodoItem> Put(Guid id, [FromBody] TodoItem todoItem)
         {
             _store.TryGetValue(todoItem.Id, out TodoItem oldValue);
             _store.TryUpdate(todoItem.Id, todoItem, oldValue);
+
             _todoHubContext.Clients.All.SendAsync("itemUpdated", todoItem);
+
             return Ok(todoItem);
         }
     }

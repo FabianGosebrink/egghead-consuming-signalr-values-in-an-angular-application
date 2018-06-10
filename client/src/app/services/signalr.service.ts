@@ -6,7 +6,7 @@ import { Todo } from '../models/todo.model';
 @Injectable({
   providedIn: 'root'
 })
-export class SignalService {
+export class SignalRService {
   private connection: HubConnection;
   itemUpdated: Subject<Todo> = new Subject<Todo>();
   itemAdded: Subject<Todo> = new Subject<Todo>();
@@ -16,7 +16,7 @@ export class SignalService {
       .withUrl('https://localhost:5001/todohub')
       .build();
     this.registerOnEvents();
-    this.connection.start().catch(err => console.error(err.toString()));
+    this.connection.start().catch(err => console.log(err.toString()));
   }
 
   registerOnEvents() {
