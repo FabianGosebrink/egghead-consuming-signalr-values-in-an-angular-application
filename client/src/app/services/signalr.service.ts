@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel
+} from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { Todo } from '../models/todo.model';
 
@@ -14,7 +18,9 @@ export class SignalRService {
   constructor() {
     this.connection = new HubConnectionBuilder()
       .withUrl('https://localhost:5001/todohub')
+      .configureLogging(LogLevel.Information)
       .build();
+
     this.registerOnEvents();
     this.connection.start().catch(err => console.log(err.toString()));
   }
